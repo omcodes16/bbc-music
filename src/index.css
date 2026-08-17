@@ -78,6 +78,8 @@ button {
   display: flex;
   flex: 1;
   overflow: hidden; /* Hide scrollbars here, manage in main-content */
+  position: relative;
+  z-index: 1;
 }
 
 .main-content {
