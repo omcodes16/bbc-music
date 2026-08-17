@@ -72,6 +72,19 @@
   background-color: var(--bg-surface-hover);
   color: var(--accent-primary);
   opacity: 1;
+  position: relative;
+}
+
+.sidebar li.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  border-radius: 0 4px 4px 0;
+  background-color: var(--accent-primary);
 }
 
 .sidebar li.active svg {

@@ -1,17 +1,66 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useTheme } from '../theme/ThemeProvider';
 import { Play, Pause, SkipBack, SkipForward, Repeat, Shuffle, Volume2, Mic2, Maximize2, Heart, ChevronDown } from 'lucide-react';
+import Visualizer from './Visualizer';
+import { useToast } from './Toast';
 import './StickyPlayer.css';
 
 const StickyPlayer = () => {
-  const { activeSong, favorites, toggleFavorite, addRecentlyPlayed, isPlayerExpanded, setIsPlayerExpanded } = useTheme();
+  const { showToast } = useToast();
+
+  const { 
+    activeSong, setActiveSong, 
+    favorites, toggleFavorite, 
+    addRecentlyPlayed, 
+    isPlayerExpanded, setIsPlayerExpanded, 
+    songs,
+    isPlaying, setIsPlaying,
+    isShuffle, setIsShuffle,
+    repeatMode, setRepeatMode
+  } = useTheme();
   const audioRef = useRef(null);
-  
-  const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState('0:00');
   const [duration, setDuration] = useState('0:00');
   const [volume, setVolume] = useState(1);
+  const [analyser, setAnalyser] = useState(null);
+  const audioContextRef = useRef(null);
+  const sourceRef = useRef(null);
+
+  // Setup Audio Context for Visualizer
+  useEffect(() => {
+    if (audioRef.current && !audioContextRef.current) {
+      const handlePlay = () => {
+        if (!audioContextRef.current) {
+          try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioContextRef.current = new AudioContext();
+            
+            sourceRef.current = audioContextRef.current.createMediaElementSource(audioRef.current);
+            const newAnalyser = audioContextRef.current.createAnalyser();
+            
+            newAnalyser.fftSize = 256; // Defines number of frequency bands
+            
+            sourceRef.current.connect(newAnalyser);
+            newAnalyser.connect(audioContextRef.current.destination);
+            
+            setAnalyser(newAnalyser);
+          } catch (e) {
+            console.error("AudioContext setup failed:", e);
+          }
+        } else if (audioContextRef.current.state === 'suspended') {
+          audioContextRef.current.resume();
+        }
+      };
+
+      audioRef.current.addEventListener('play', handlePlay);
+      return () => {
+        if (audioRef.current) {
+          audioRef.current.removeEventListener('play', handlePlay);
+        }
+      };
+    }
+  }, []);
 
   // Apply volume changes
   useEffect(() => {
@@ -25,7 +74,10 @@ const StickyPlayer = () => {
     if (audioRef.current && activeSong) {
       audioRef.current.src = activeSong.audioSrc || "";
       if (isPlaying) {
-        audioRef.current.play().catch(e => console.log("Audio play error:", e));
+        audioRef.current.play().catch(e => {
+          console.log("Audio play error:", e);
+          setIsPlaying(false);
+        });
       }
       
       // Track recently played
@@ -33,18 +85,22 @@ const StickyPlayer = () => {
     }
   }, [activeSong]);
 
-  const togglePlay = () => {
+  // Sync global isPlaying state with audio element
+  useEffect(() => {
     if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
+      if (isPlaying && audioRef.current.paused) {
         audioRef.current.play().catch(e => {
           console.log("Audio play error:", e);
-          alert("Audio file not found! Please place your MP3 files in the public/audio folder as instructed.");
+          setIsPlaying(false);
         });
+      } else if (!isPlaying && !audioRef.current.paused) {
+        audioRef.current.pause();
       }
-      setIsPlaying(!isPlaying);
     }
+  }, [isPlaying]);
+
+  const togglePlay = () => {
+    setIsPlaying(!isPlaying);
   };
 
   const formatTime = (timeInSeconds) => {
@@ -87,12 +143,80 @@ const StickyPlayer = () => {
     }
   };
 
+  const playNextSong = (autoPlay = false) => {
+    if (!activeSong || !songs || songs.length === 0) return;
+    
+    if (autoPlay && repeatMode === 'one') {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(console.error);
+      }
+      return;
+    }
+
+    if (isShuffle) {
+      let randomIndex;
+      do {
+        randomIndex = Math.floor(Math.random() * songs.length);
+      } while (songs.length > 1 && songs[randomIndex].id === activeSong.id);
+      setActiveSong(songs[randomIndex]);
+      return;
+    }
+
+    const currentIndex = songs.findIndex(s => s.id === activeSong.id);
+    if (currentIndex === songs.length - 1 && autoPlay && repeatMode === 'off') {
+      setIsPlaying(false);
+      return;
+    }
+
+    const nextSong = songs[(currentIndex + 1) % songs.length];
+    setActiveSong(nextSong);
+  };
+
+  const playPrevSong = () => {
+    if (!activeSong || !songs || songs.length === 0) return;
+    const currentIndex = songs.findIndex(s => s.id === activeSong.id);
+    const prevIndex = currentIndex === 0 ? songs.length - 1 : currentIndex - 1;
+    setActiveSong(songs[prevIndex]);
+  };
+
+  const toggleRepeat = () => {
+    if (repeatMode === 'off') setRepeatMode('all');
+    else if (repeatMode === 'all') setRepeatMode('one');
+    else setRepeatMode('off');
+  };
+
+  const getRepeatIcon = () => {
+    if (repeatMode === 'one') {
+      return (
+        <div style={{ position: 'relative' }}>
+          <Repeat size={24} color="var(--accent-primary)" />
+          <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '10px', color: 'var(--accent-primary)', fontWeight: 'bold' }}>1</span>
+        </div>
+      );
+    }
+    return <Repeat size={24} color={repeatMode === 'all' ? "var(--accent-primary)" : "currentColor"} />;
+  };
+
+  const getRepeatIconSmall = () => {
+    if (repeatMode === 'one') {
+      return (
+        <div style={{ position: 'relative' }}>
+          <Repeat size={18} color="var(--accent-primary)" />
+          <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '8px', color: 'var(--accent-primary)', fontWeight: 'bold' }}>1</span>
+        </div>
+      );
+    }
+    return <Repeat size={18} color={repeatMode === 'all' ? "var(--accent-primary)" : "currentColor"} />;
+  };
+
   return (
     <>
       <audio 
         ref={audioRef} 
         onTimeUpdate={handleTimeUpdate}
-        onEnded={() => setIsPlaying(false)}
+        onEnded={() => playNextSong(true)}
+        crossOrigin="anonymous"
       />
 
       {isPlayerExpanded && activeSong && (
@@ -138,13 +262,15 @@ const StickyPlayer = () => {
             </div>
 
             <div className="fullscreen-controls">
-              <button className="control-btn"><Shuffle size={24} /></button>
-              <button className="control-btn"><SkipBack size={36} fill="currentColor" /></button>
+              <button className="control-btn" onClick={() => setIsShuffle(!isShuffle)}>
+                <Shuffle size={24} color={isShuffle ? "var(--accent-primary)" : "currentColor"} />
+              </button>
+              <button className="control-btn" onClick={playPrevSong}><SkipBack size={36} fill="currentColor" /></button>
               <button className="control-btn play-btn" style={{ width: '64px', height: '64px' }} onClick={togglePlay}>
                 {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" />}
               </button>
-              <button className="control-btn"><SkipForward size={36} fill="currentColor" /></button>
-              <button className="control-btn"><Repeat size={24} /></button>
+              <button className="control-btn" onClick={() => playNextSong(false)}><SkipForward size={36} fill="currentColor" /></button>
+              <button className="control-btn" onClick={toggleRepeat}>{getRepeatIcon()}</button>
             </div>
           </div>
         </div>
@@ -170,13 +296,14 @@ const StickyPlayer = () => {
               <h4 className="player-title">{activeSong.title}</h4>
               <p className="player-artist">{activeSong.artist}</p>
             </div>
-            <Heart 
-              size={20} 
-              className="heart-icon" 
-              style={{ cursor: 'pointer', transition: 'all 0.2s', color: favorites.includes(activeSong.id) ? 'var(--accent-primary)' : 'var(--text-secondary)' }}
-              fill={favorites.includes(activeSong.id) ? "var(--accent-primary)" : "none"}
-              onClick={() => toggleFavorite(activeSong.id)}
-            />
+            <button className="control-btn" onClick={(e) => { e.stopPropagation(); toggleFavorite(activeSong.id); }}>
+              <Heart 
+                size={20} 
+                className="heart-icon" 
+                style={{ cursor: 'pointer', transition: 'all 0.2s', color: favorites.includes(activeSong.id) ? 'var(--accent-primary)' : 'var(--text-secondary)' }}
+                fill={favorites.includes(activeSong.id) ? "var(--accent-primary)" : "none"}
+              />
+            </button>
           </>
         ) : (
           <div className="player-info">
@@ -187,13 +314,15 @@ const StickyPlayer = () => {
 
       <div className="player-center">
         <div className="player-controls">
-          <button className="control-btn"><Shuffle size={18} /></button>
-          <button className="control-btn"><SkipBack size={24} fill="currentColor" /></button>
+          <button className="control-btn" onClick={() => setIsShuffle(!isShuffle)}>
+            <Shuffle size={18} color={isShuffle ? "var(--accent-primary)" : "currentColor"} />
+          </button>
+          <button className="control-btn" onClick={playPrevSong}><SkipBack size={24} fill="currentColor" /></button>
           <button className="control-btn play-btn" onClick={togglePlay}>
             {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
           </button>
-          <button className="control-btn"><SkipForward size={24} fill="currentColor" /></button>
-          <button className="control-btn"><Repeat size={18} /></button>
+          <button className="control-btn" onClick={() => playNextSong(false)}><SkipForward size={24} fill="currentColor" /></button>
+          <button className="control-btn" onClick={toggleRepeat}>{getRepeatIconSmall()}</button>
         </div>
         <div className="player-progress-container">
           <span className="time-text">{currentTime}</span>
@@ -212,8 +341,10 @@ const StickyPlayer = () => {
       </div>
 
       <div className="player-right">
-        <button className="control-btn"><Mic2 size={18} /></button>
-        <button className="control-btn"><Volume2 size={18} /></button>
+        <button className="control-btn" onClick={() => showToast("Lyrics not available for this song")}><Mic2 size={18} /></button>
+        <button className="control-btn" onClick={() => setVolume(volume === 0 ? 1 : 0)}>
+          {volume === 0 ? <Volume2 size={18} opacity={0.5} /> : <Volume2 size={18} />}
+        </button>
         <div className="volume-bar" style={{ display: 'flex', alignItems: 'center' }}>
           <input 
             type="range" 

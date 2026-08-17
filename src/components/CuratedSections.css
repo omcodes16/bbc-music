@@ -110,3 +110,14 @@
   font-size: 1.3rem;
   letter-spacing: 1px;
 }
+
+@media (max-width: 768px) {
+  .curated-play {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .card-scroll-container {
+    -webkit-overflow-scrolling: touch;
+    padding-right: 20px;
+  }
+}

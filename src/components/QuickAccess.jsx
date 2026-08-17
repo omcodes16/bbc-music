@@ -4,7 +4,7 @@ import { ThemeContext } from '../theme/ThemeProvider';
 import './QuickAccess.css';
 
 const QuickAccess = () => {
-  const { songs, setActiveSong, activeSong } = useContext(ThemeContext);
+  const { songs, setActiveSong, activeSong, setIsPlaying } = useContext(ThemeContext);
   
   // Pick the first 6 songs for Quick Access
   const quickAccessSongs = songs.slice(0, 6);
@@ -17,7 +17,10 @@ const QuickAccess = () => {
           <div 
             key={song.id} 
             className={`quick-access-card ${activeSong.id === song.id ? 'active' : ''}`}
-            onClick={() => setActiveSong(song)}
+            onClick={() => {
+              setActiveSong(song);
+              setIsPlaying(true);
+            }}
           >
             <div className="quick-access-img-wrapper">
               <img src={song.artwork} alt={song.title} className="quick-access-img" />

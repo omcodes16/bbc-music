@@ -2,10 +2,12 @@ import React from 'react';
 import { useTheme } from '../theme/ThemeProvider';
 import { songs } from '../theme/songs';
 import { Play, Heart, MoreHorizontal } from 'lucide-react';
+import { useToast } from './Toast';
 import './SongList.css';
 
 const SongList = () => {
   const { activeSong, setActiveSong, searchQuery, favorites, toggleFavorite, setIsPlayerExpanded } = useTheme();
+  const { showToast } = useToast();
 
   let displaySongs = songs;
   
@@ -41,7 +43,11 @@ const SongList = () => {
               >
                 <div className="col-index">
                   {isActive ? (
-                    <Play size={16} fill="currentColor" className="playing-icon" />
+                    <div className="eq-bars">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
                   ) : (
                     <span>{index + 1}</span>
                   )}
@@ -71,7 +77,14 @@ const SongList = () => {
                     }}
                   />
                   <span>{song.duration}</span>
-                  <MoreHorizontal size={20} className="more-icon" />
+                  <MoreHorizontal 
+                    size={20} 
+                    className="more-icon" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      showToast("More options coming soon");
+                    }}
+                  />
                 </div>
               </div>
             );

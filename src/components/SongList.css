@@ -40,14 +40,29 @@
   transition: all 0.3s ease;
   cursor: pointer;
   background-color: transparent;
+  animation: fadeSlideUp 0.3s ease both;
 }
+
+.song-row:nth-child(1) { animation-delay: 0s; }
+.song-row:nth-child(2) { animation-delay: 0.03s; }
+.song-row:nth-child(3) { animation-delay: 0.06s; }
+.song-row:nth-child(4) { animation-delay: 0.09s; }
+.song-row:nth-child(5) { animation-delay: 0.12s; }
+.song-row:nth-child(6) { animation-delay: 0.15s; }
+.song-row:nth-child(7) { animation-delay: 0.18s; }
+.song-row:nth-child(8) { animation-delay: 0.21s; }
+.song-row:nth-child(9) { animation-delay: 0.24s; }
+.song-row:nth-child(10) { animation-delay: 0.27s; }
+.song-row:nth-child(11) { animation-delay: 0.3s; }
+.song-row:nth-child(12) { animation-delay: 0.33s; }
 
 .song-row:hover {
   background-color: var(--bg-surface-hover);
 }
 
 .song-row.active {
-  background-color: var(--bg-surface);
+  background: linear-gradient(90deg, rgba(var(--accent-primary-rgb, 58, 179, 112), 0.12) 0%, transparent 60%);
+  border-left: 3px solid var(--accent-primary);
 }
 
 .col-index {
@@ -76,10 +91,14 @@
   flex-shrink: 0;
 }
 
+.song-row:hover .song-img {
+  transform: scale(1.08);
+}
 .song-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.25s ease;
 }
 
 .song-info {
@@ -145,12 +164,42 @@
 
 @media (max-width: 768px) {
   .song-list-header, .song-row {
-    grid-template-columns: 30px 1fr 60px;
+    grid-template-columns: 28px 1fr auto;
   }
-  .col-album, .heart-icon, .more-icon {
+  .col-album {
     display: none;
   }
-  .col-date {
-    justify-content: center;
+  .heart-icon, .more-icon {
+    opacity: 1;
   }
+  .col-date {
+    gap: 10px;
+  }
+}
+
+.eq-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+
+.eq-bars span {
+  width: 3px;
+  background-color: var(--accent-primary);
+  border-radius: 2px;
+}
+
+.eq-bars span:nth-child(1) {
+  animation: eqBar1 0.5s ease-in-out infinite;
+}
+.eq-bars span:nth-child(2) {
+  animation: eqBar2 0.4s ease-in-out infinite;
+}
+.eq-bars span:nth-child(3) {
+  animation: eqBar3 0.6s ease-in-out infinite;
+}
+
+.heart-icon:active {
+  animation: heartPop 0.3s ease;
 }

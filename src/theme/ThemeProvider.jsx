@@ -16,6 +16,9 @@ export const ThemeProvider = ({ children }) => {
   const [recentlyPlayed, setRecentlyPlayed] = useState([]);
   const [localSongs, setLocalSongs] = useState([]);
   const [isPlayerExpanded, setIsPlayerExpanded] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isShuffle, setIsShuffle] = useState(false);
+  const [repeatMode, setRepeatMode] = useState('off'); // 'off', 'all', 'one'
 
   useEffect(() => {
     const currentTheme = themes[manualTheme || activeSong.themeId];
@@ -53,7 +56,10 @@ export const ThemeProvider = ({ children }) => {
       favorites, toggleFavorite,
       recentlyPlayed, addRecentlyPlayed,
       localSongs, addLocalSongs,
-      isPlayerExpanded, setIsPlayerExpanded
+      isPlayerExpanded, setIsPlayerExpanded,
+      isPlaying, setIsPlaying,
+      isShuffle, setIsShuffle,
+      repeatMode, setRepeatMode
     }}>
       {children}
     </ThemeContext.Provider>

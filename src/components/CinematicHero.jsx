@@ -1,10 +1,12 @@
 import React, { useContext } from 'react';
-import { Play, Plus, Heart } from 'lucide-react';
+import { Play, Pause, Plus, Heart } from 'lucide-react';
 import { ThemeContext } from '../theme/ThemeProvider';
+import { useToast } from './Toast';
 import './CinematicHero.css';
 
 const CinematicHero = () => {
-  const { activeSong } = useContext(ThemeContext);
+  const { showToast } = useToast();
+  const { activeSong, isPlaying, setIsPlaying, favorites, toggleFavorite } = useContext(ThemeContext);
 
   if (!activeSong) return null;
 
@@ -32,14 +34,25 @@ const CinematicHero = () => {
           <p className="hero-artist">{activeSong.artist}</p>
           
           <div className="hero-actions">
-            <button className="btn-primary">
-              <Play fill="currentColor" size={20} /> PLAY
+            <button 
+              className="btn-primary" 
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
+              {isPlaying ? <Pause fill="currentColor" size={20} /> : <Play fill="currentColor" size={20} />} 
+              {isPlaying ? 'PAUSE' : 'PLAY'}
             </button>
-            <button className="btn-secondary">
+            <button className="btn-secondary" onClick={() => showToast("Added to playlist ✓")}>
               <Plus size={20} /> ADD TO PLAYLIST
             </button>
-            <button className="btn-icon">
-              <Heart size={24} />
+            <button 
+              className="btn-icon" 
+              onClick={() => toggleFavorite(activeSong.id)}
+            >
+              <Heart 
+                size={24} 
+                fill={favorites.includes(activeSong.id) ? "var(--accent-primary)" : "none"}
+                color={favorites.includes(activeSong.id) ? "var(--accent-primary)" : "currentColor"}
+              />
             </button>
           </div>
         </div>

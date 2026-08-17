@@ -1,25 +1,33 @@
 import React from 'react';
-import { Home, Search, Library, User } from 'lucide-react';
+import { Home, Heart, Folder } from 'lucide-react';
+import { useTheme } from '../theme/ThemeProvider';
 import './MobileNav.css';
 
 const MobileNav = () => {
+  const { activeView, setActiveView } = useTheme();
+  
   return (
     <nav className="mobile-nav">
-      <div className="mobile-nav-item active">
+      <div 
+        className={`mobile-nav-item ${activeView === 'home' ? 'active' : ''}`}
+        onClick={() => setActiveView('home')}
+      >
         <Home size={24} />
         <span>Home</span>
       </div>
-      <div className="mobile-nav-item">
-        <Search size={24} />
-        <span>Search</span>
+      <div 
+        className={`mobile-nav-item ${activeView === 'favorites' ? 'active' : ''}`}
+        onClick={() => setActiveView('favorites')}
+      >
+        <Heart size={24} />
+        <span>Favorites</span>
       </div>
-      <div className="mobile-nav-item">
-        <Library size={24} />
-        <span>Library</span>
-      </div>
-      <div className="mobile-nav-item">
-        <User size={24} />
-        <span>Profile</span>
+      <div 
+        className={`mobile-nav-item ${activeView === 'local-music' ? 'active' : ''}`}
+        onClick={() => setActiveView('local-music')}
+      >
+        <Folder size={24} />
+        <span>Local Music</span>
       </div>
     </nav>
   );

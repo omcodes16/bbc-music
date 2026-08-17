@@ -29,9 +29,6 @@ const Header = () => {
       
       <div className="header-actions">
         <button className="header-btn pill-btn" onClick={cycleTheme}>Theme</button>
-        <button className="header-btn icon-btn"><Bell size={20} /></button>
-        <button className="header-btn icon-btn"><User size={20} /></button>
-        <button className="header-btn pill-btn primary-btn"><Plus size={18} /> Add Music</button>
       </div>
     </header>
   );

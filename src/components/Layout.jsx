@@ -67,7 +67,7 @@ const Layout = () => {
         <Sidebar />
         <main className="main-content">
           <Header />
-          <div className="content-inner">
+          <div className="content-inner view-transition" key={activeView}>
             {renderContent()}
           </div>
         </main>
