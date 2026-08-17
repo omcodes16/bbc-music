@@ -21,6 +21,14 @@ const Sidebar = () => {
       </nav>
 
       <nav className="nav-group">
+        <h4 className="nav-title">PLAYLISTS</h4>
+        <ul>
+          <li className={activeView === 'hindi-songs' ? 'active' : ''} onClick={() => setActiveView('hindi-songs')}><ListMusic size={20} /> Hindi Songs</li>
+          <li className={activeView === 'english-songs' ? 'active' : ''} onClick={() => setActiveView('english-songs')}><ListMusic size={20} /> English Songs</li>
+        </ul>
+      </nav>
+
+      <nav className="nav-group">
         <h4 className="nav-title">YOUR LIBRARY</h4>
         <ul>
           <li className={activeView === 'favorites' ? 'active' : ''} onClick={() => setActiveView('favorites')}><Heart size={20} /> Favorites</li>

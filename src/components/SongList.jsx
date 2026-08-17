@@ -5,14 +5,20 @@ import { Play, Heart, MoreHorizontal } from 'lucide-react';
 import { useToast } from './Toast';
 import './SongList.css';
 
-const SongList = () => {
+const SongList = ({ filter }) => {
   const { activeSong, setActiveSong, searchQuery, favorites, toggleFavorite, setIsPlayerExpanded } = useTheme();
   const { showToast } = useToast();
 
   let displaySongs = songs;
   
+  if (filter === 'hindi') {
+    displaySongs = displaySongs.filter(song => song.language === 'hindi');
+  } else if (filter === 'english') {
+    displaySongs = displaySongs.filter(song => song.language === 'english');
+  }
+
   if (searchQuery) {
-    displaySongs = songs.filter(song => 
+    displaySongs = displaySongs.filter(song => 
       song.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
       song.artist.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -21,7 +27,7 @@ const SongList = () => {
   return (
     <section className="song-list-section">
       <div className="category-group">
-        <h2 className="display-font section-title" style={{ marginBottom: '24px' }}>Your Playlist</h2>
+        {!filter && <h2 className="display-font section-title" style={{ marginBottom: '24px' }}>Your Playlist</h2>}
         <div className="song-list">
           <div className="song-list-header">
             <div className="col-index">#</div>

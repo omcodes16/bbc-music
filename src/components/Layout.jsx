@@ -14,7 +14,7 @@ import { useTheme } from '../theme/ThemeProvider';
 import './Layout.css';
 
 const Layout = () => {
-  const { searchQuery, activeView } = useTheme();
+  const { searchQuery, activeView, activeSong } = useTheme();
   
   const renderContent = () => {
     if (searchQuery || activeView === 'search') {
@@ -37,6 +37,20 @@ const Layout = () => {
         return (
           <div className="sections-container" style={{ marginTop: '40px' }}>
             <CuratedSections />
+          </div>
+        );
+      case 'hindi-songs':
+        return (
+          <div className="sections-container" style={{ marginTop: '40px' }}>
+            <h2 className="display-font section-title">Hindi Songs</h2>
+            <SongList filter="hindi" />
+          </div>
+        );
+      case 'english-songs':
+        return (
+          <div className="sections-container" style={{ marginTop: '40px' }}>
+            <h2 className="display-font section-title">English Songs</h2>
+            <SongList filter="english" />
           </div>
         );
       case 'discover':
@@ -63,6 +77,11 @@ const Layout = () => {
 
   return (
     <div className="app-container">
+      <div 
+        className="dynamic-app-background" 
+        style={{ backgroundImage: `url(${activeSong?.artwork})` }} 
+      />
+      <div className="dynamic-bg-overlay" />
       <div className="layout-container">
         <Sidebar />
         <main className="main-content">

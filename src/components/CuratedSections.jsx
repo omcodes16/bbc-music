@@ -7,11 +7,11 @@ const CuratedSections = () => {
   const { songs, setActiveSong, setIsPlaying } = useContext(ThemeContext);
 
   const madeForYou = [
-    { id: 1, title: 'Romantic Evenings', desc: 'Soft romantic songs', artwork: '/images/1.jpg' },
-    { id: 2, title: 'Midnight Memories', desc: 'Slow emotional songs', artwork: '/images/3.jpg' },
-    { id: 3, title: 'Autumn Walk', desc: 'Nostalgic cinematic atmosphere', artwork: '/images/2.jpg' },
-    { id: 4, title: 'Broken But Beautiful', desc: 'Melancholic songs', artwork: '/images/4.jpg' },
-    { id: 5, title: 'Main Character', desc: 'Cinematic emotional songs', artwork: '/images/1.jpg' },
+    { id: 1, title: 'Romantic Evenings', desc: 'Soft romantic songs', artwork: '/images/Gemini_Generated_Image_ (1).png' },
+    { id: 2, title: 'Midnight Memories', desc: 'Slow emotional songs', artwork: '/images/Gemini_Generated_Image_5a9q205a9q205a9q.png' },
+    { id: 3, title: 'Autumn Walk', desc: 'Nostalgic cinematic atmosphere', artwork: '/images/Gemini_Generated_Image_dde27cdde27cdde2.png' },
+    { id: 4, title: 'Broken But Beautiful', desc: 'Melancholic songs', artwork: '/images/Gemini_Generated_Image_p82yhop82yhop82y.png' },
+    { id: 5, title: 'Main Character', desc: 'Cinematic emotional songs', artwork: '/images/Gemini_Generated_Image_rk3u2crk3u2crk3u.png' },
   ];
 
   const playRandomSong = () => {

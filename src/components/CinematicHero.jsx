@@ -12,7 +12,6 @@ const CinematicHero = () => {
 
   return (
     <div className="hero-container">
-      {/* Blurred glowing background derived from artwork */}
       <div 
         className="hero-background"
         style={{ backgroundImage: `url(${activeSong.artwork})` }}

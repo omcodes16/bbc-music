@@ -1,3 +1,10 @@
+.layout-container {
+  display: flex;
+  height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
 .content-inner {
   position: relative;
   z-index: 1;
@@ -19,4 +26,30 @@
   .sections-container {
     padding: 0 20px 150px 20px;
   }
+}
+
+.dynamic-app-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  filter: blur(60px) brightness(0.4);
+  z-index: 0;
+  transform: scale(1.1);
+  transition: background-image 0.8s ease;
+  pointer-events: none;
+}
+
+.dynamic-bg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1), var(--bg-primary) 90%);
+  z-index: 0;
+  pointer-events: none;
 }
