@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+﻿import React, { useRef } from 'react';
 import { useTheme } from '../theme/ThemeProvider';
 import { Play, Upload, MoreHorizontal } from 'lucide-react';
 import './SongList.css';
@@ -18,7 +18,7 @@ const LocalMusic = () => {
         id: `local-${file.name}-${Date.now()}`,
         title: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
         artist: "Local Device",
-        artwork: "/images/4.jpg", // Default placeholder
+        artwork: import.meta.env.BASE_URL + "images/4.jpg", // Default placeholder
         audioSrc: audioSrc,
         themeId: "blue", // Default theme
         category: "Local",
@@ -109,3 +109,4 @@ const LocalMusic = () => {
 };
 
 export default LocalMusic;
+
