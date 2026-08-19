@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://omcodes16.github.io/loveandsad",
+  "homepage": "https://omcodes16.github.io/bbc-music",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
