@@ -26,15 +26,8 @@ const StickyPlayer = () => {
   const [analyser, setAnalyser] = useState(null);
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
-  const bassFilterRef = useRef(null);
 
-  // New Advanced Features State
-  const [loopA, setLoopA] = useState(null);
-  const [loopB, setLoopB] = useState(null);
-  const [playbackRate, setPlaybackRate] = useState(1);
-  const [isBassBoosted, setIsBassBoosted] = useState(false);
-
-  // Setup Audio Context for Visualizer and Bass Boost
+  // Setup Audio Context for Visualizer
   useEffect(() => {
     if (audioRef.current && !audioContextRef.current) {
       const handlePlay = () => {
@@ -45,17 +38,11 @@ const StickyPlayer = () => {
             
             sourceRef.current = audioContextRef.current.createMediaElementSource(audioRef.current);
             const newAnalyser = audioContextRef.current.createAnalyser();
-            newAnalyser.fftSize = 256;
             
-            const bassFilter = audioContextRef.current.createBiquadFilter();
-            bassFilter.type = "lowshelf";
-            bassFilter.frequency.value = 150;
-            bassFilter.gain.value = 0;
-            bassFilterRef.current = bassFilter;
+            newAnalyser.fftSize = 256; // Defines number of frequency bands
             
             sourceRef.current.connect(newAnalyser);
-            newAnalyser.connect(bassFilter);
-            bassFilter.connect(audioContextRef.current.destination);
+            newAnalyser.connect(audioContextRef.current.destination);
             
             setAnalyser(newAnalyser);
           } catch (e) {
@@ -82,27 +69,9 @@ const StickyPlayer = () => {
     }
   }, [volume]);
 
-  // Apply Bass Boost changes
-  useEffect(() => {
-    if (bassFilterRef.current) {
-      bassFilterRef.current.gain.value = isBassBoosted ? 15 : 0;
-    }
-  }, [isBassBoosted]);
-
-  // Apply Playback Rate
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.playbackRate = playbackRate;
-    }
-  }, [playbackRate, activeSong]);
-
   // Load and play new song when activeSong changes
   useEffect(() => {
     if (audioRef.current && activeSong) {
-      // Reset A-B loop when song changes
-      setLoopA(null);
-      setLoopB(null);
-
       audioRef.current.src = activeSong.audioSrc || "";
       if (isPlaying) {
         const playPromise = audioRef.current.play();
@@ -160,14 +129,6 @@ const StickyPlayer = () => {
       if (total) {
         setDuration(formatTime(total));
         setProgress((current / total) * 100);
-      }
-
-      // Handle A-B Loop
-      if (loopA !== null && loopB !== null && current >= loopB) {
-        audioRef.current.currentTime = loopA;
-        if (audioRef.current.paused) {
-           audioRef.current.play().catch(console.error);
-        }
       }
     }
   };
@@ -233,34 +194,6 @@ const StickyPlayer = () => {
     if (repeatMode === 'off') setRepeatMode('all');
     else if (repeatMode === 'all') setRepeatMode('one');
     else setRepeatMode('off');
-  };
-
-  const handleSetLoop = () => {
-    if (!audioRef.current) return;
-    if (loopA === null) {
-      setLoopA(audioRef.current.currentTime);
-      showToast("Loop Start (A) Set");
-    } else if (loopB === null) {
-      const current = audioRef.current.currentTime;
-      if (current > loopA) {
-        setLoopB(current);
-        showToast("Loop End (B) Set");
-      } else {
-        setLoopA(current);
-        showToast("Loop Start (A) Updated");
-      }
-    } else {
-      setLoopA(null);
-      setLoopB(null);
-      showToast("A-B Loop Cleared");
-    }
-  };
-
-  const cyclePlaybackRate = () => {
-    const rates = [0.5, 0.75, 1, 1.25, 1.5, 2];
-    const nextIndex = (rates.indexOf(playbackRate) + 1) % rates.length;
-    setPlaybackRate(rates[nextIndex]);
-    showToast(`Speed: ${rates[nextIndex]}x`);
   };
 
   const getRepeatIcon = () => {
@@ -336,36 +269,6 @@ const StickyPlayer = () => {
                 <span>{currentTime}</span>
                 <span>{duration || activeSong.duration}</span>
               </div>
-            </div>
-
-            {/* Extra Controls Row */}
-            <div className="fullscreen-extra-controls" style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
-              <button 
-                className="control-btn" 
-                onClick={cyclePlaybackRate}
-                style={{ fontSize: '14px', fontWeight: 'bold', color: playbackRate !== 1 ? 'var(--accent-primary)' : 'inherit', border: '1px solid currentColor', borderRadius: '12px', padding: '4px 12px' }}
-              >
-                {playbackRate}x
-              </button>
-              
-              <button 
-                className="control-btn" 
-                onClick={handleSetLoop}
-                style={{ fontSize: '14px', fontWeight: 'bold', color: loopA !== null ? 'var(--accent-primary)' : 'inherit', border: '1px solid currentColor', borderRadius: '12px', padding: '4px 12px', minWidth: '85px' }}
-              >
-                {loopA === null ? 'A-B Loop' : loopB === null ? 'Set B' : 'Clear A-B'}
-              </button>
-
-              <button 
-                className="control-btn" 
-                onClick={() => {
-                  setIsBassBoosted(!isBassBoosted);
-                  showToast(isBassBoosted ? "Bass Boost Off" : "Bass Boost On");
-                }}
-                style={{ fontSize: '14px', fontWeight: 'bold', color: isBassBoosted ? 'var(--accent-primary)' : 'inherit', border: '1px solid currentColor', borderRadius: '12px', padding: '4px 12px' }}
-              >
-                Bass Boost
-              </button>
             </div>
 
             <div className="fullscreen-controls">
