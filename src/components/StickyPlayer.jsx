@@ -359,18 +359,17 @@ const StickyPlayer = () => {
           key={idx} 
           className={`lyric-line ${isActive ? 'active' : ''}`}
           style={{
-            fontSize: isActive ? '1.8rem' : '1.3rem',
-            fontWeight: isActive ? '800' : '600',
-            lineHeight: '1.6',
-            marginBottom: '24px',
+            fontSize: isActive ? '1.4rem' : '1.1rem',
+            fontWeight: isActive ? '700' : '500',
+            lineHeight: '1.5',
+            marginBottom: '16px',
             fontFamily: "'Inter', sans-serif",
-            transition: 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)',
+            transition: 'color 0.3s ease, font-size 0.3s ease',
             color: isActive ? 'var(--accent-primary)' : 'white',
-            transform: isActive ? 'scale(1.15) translateY(-5px)' : 'scale(0.9) translateY(0)',
-            transformOrigin: 'center',
-            filter: isActive ? 'blur(0px)' : (isPast ? 'blur(3px)' : 'blur(1.5px)'),
-            textShadow: isActive ? '0 0 25px var(--accent-glow)' : 'none',
-            opacity: isActive ? 1 : (isPast ? 0.2 : 0.4)
+            opacity: isActive ? 1 : (isPast ? 0.3 : 0.6),
+            wordWrap: 'break-word',
+            whiteSpace: 'pre-wrap',
+            padding: '0 10px'
           }}
         >
           {line.text}
