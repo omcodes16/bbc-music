@@ -9,9 +9,15 @@ const QuickAccess = () => {
   // Pick the first 6 songs for Quick Access
   const quickAccessSongs = songs.slice(0, 6);
 
+  // Dynamic greeting based on time of day
+  const hour = new Date().getHours();
+  let greeting = 'Good evening';
+  if (hour < 12) greeting = 'Good morning';
+  else if (hour < 17) greeting = 'Good afternoon';
+
   return (
     <section className="quick-access-section">
-      <h2 className="display-font section-title">Good evening</h2>
+      <h2 className="display-font section-title">{greeting}</h2>
       <div className="quick-access-grid">
         {quickAccessSongs.map((song) => (
           <div 
