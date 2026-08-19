@@ -40,9 +40,7 @@ const CinematicHero = () => {
               {isPlaying ? <Pause fill="currentColor" size={20} /> : <Play fill="currentColor" size={20} />} 
               {isPlaying ? 'PAUSE' : 'PLAY'}
             </button>
-            <button className="btn-secondary" onClick={() => showToast("Added to playlist ✓")}>
-              <Plus size={20} /> ADD TO PLAYLIST
-            </button>
+
             <button 
               className="btn-icon" 
               onClick={() => toggleFavorite(activeSong.id)}
