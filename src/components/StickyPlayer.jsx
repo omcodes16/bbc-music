@@ -5,9 +5,28 @@ import Visualizer from './Visualizer';
 import { useToast } from './Toast';
 import './StickyPlayer.css';
 
-const StickyPlayer = () => {
-  const { showToast } = useToast();
+const parseSyncedLyrics = (lrcString) => {
+  const lines = lrcString.split('\n');
+  const parsed = [];
+  const regex = /^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
+  
+  lines.forEach(line => {
+    const match = regex.exec(line);
+    if (match) {
+      const minutes = parseInt(match[1], 10);
+      const seconds = parseInt(match[2], 10);
+      const ms = parseInt(match[3], 10);
+      const timeInSeconds = minutes * 60 + seconds + ms / (match[3].length === 3 ? 1000 : 100);
+      const text = match[4].trim();
+      if (text) {
+        parsed.push({ time: timeInSeconds, text });
+      }
+    }
+  });
+  return parsed;
+};
 
+const StickyPlayer = () => {
   const { 
     activeSong, setActiveSong, 
     favorites, toggleFavorite, 
@@ -18,11 +37,13 @@ const StickyPlayer = () => {
     isShuffle, setIsShuffle,
     repeatMode, setRepeatMode
   } = useTheme();
-  const audioRef = useRef(null);
+
   const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState('0:00');
-  const [duration, setDuration] = useState('0:00');
+  const [currentTime, setCurrentTime] = useState("0:00");
+  const [duration, setDuration] = useState("0:00");
   const [volume, setVolume] = useState(1);
+  const audioRef = useRef(null);
+  const { showToast } = useToast();
   const [analyser, setAnalyser] = useState(null);
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
@@ -33,29 +54,31 @@ const StickyPlayer = () => {
   const [loopB, setLoopB] = useState(null);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showLyrics, setShowLyrics] = useState(false);
-  const [lyricsData, setLyricsData] = useState({ text: '', synced: false });
+  const [lyricsData, setLyricsData] = useState({ lines: [], isSynced: false, plainText: '' });
 
   // Fetch lyrics automatically
   useEffect(() => {
     if (activeSong && showLyrics) {
-      setLyricsData({ text: 'Finding lyrics on LRCLIB...', synced: false });
+      setLyricsData({ lines: [], isSynced: false, plainText: 'Finding lyrics on LRCLIB...' });
       const url = `https://lrclib.net/api/search?track_name=${encodeURIComponent(activeSong.title)}&artist_name=${encodeURIComponent(activeSong.artist)}`;
       fetch(url)
         .then(res => res.json())
         .then(data => {
           if (data && data.length > 0) {
             const track = data[0];
-            if (track.plainLyrics) {
-              setLyricsData({ text: track.plainLyrics, synced: false });
+            if (track.syncedLyrics) {
+              setLyricsData({ lines: parseSyncedLyrics(track.syncedLyrics), isSynced: true, plainText: '' });
+            } else if (track.plainLyrics) {
+              setLyricsData({ lines: [], isSynced: false, plainText: track.plainLyrics });
             } else {
-              setLyricsData({ text: 'Lyrics not found for this song.', synced: false });
+              setLyricsData({ lines: [], isSynced: false, plainText: 'Lyrics not found for this song.' });
             }
           } else {
-            setLyricsData({ text: 'Lyrics not found for this song.', synced: false });
+            setLyricsData({ lines: [], isSynced: false, plainText: 'Lyrics not found for this song.' });
           }
         })
         .catch(err => {
-          setLyricsData({ text: 'Error loading lyrics.', synced: false });
+          setLyricsData({ lines: [], isSynced: false, plainText: 'Error loading lyrics.' });
         });
     }
   }, [activeSong, showLyrics]);
@@ -300,6 +323,60 @@ const StickyPlayer = () => {
     return <Repeat size={18} color={repeatMode === 'all' ? "var(--accent-primary)" : "currentColor"} />;
   };
 
+  useEffect(() => {
+    if (showLyrics && lyricsData.isSynced) {
+      const activeEl = document.querySelector('.lyric-line.active');
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [currentTime, showLyrics, lyricsData.isSynced]);
+
+  const renderLyrics = () => {
+    if (!lyricsData.isSynced) {
+      return (
+        <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: '1.2rem', lineHeight: '2', color: 'rgba(255,255,255,0.95)' }}>
+          {lyricsData.plainText}
+        </pre>
+      );
+    }
+    
+    const current = audioRef.current ? audioRef.current.currentTime : 0;
+    let activeIndex = -1;
+    for (let i = 0; i < lyricsData.lines.length; i++) {
+      if (current >= lyricsData.lines[i].time - 0.3) { // Small offset for early highlight
+        activeIndex = i;
+      } else {
+        break;
+      }
+    }
+
+    return lyricsData.lines.map((line, idx) => {
+      const isActive = idx === activeIndex;
+      const isPast = idx < activeIndex;
+      return (
+        <div 
+          key={idx} 
+          className={`lyric-line ${isActive ? 'active' : ''}`}
+          style={{
+            fontSize: isActive ? '1.8rem' : '1.3rem',
+            fontWeight: isActive ? '800' : '600',
+            lineHeight: '1.6',
+            marginBottom: '20px',
+            fontFamily: "'Inter', sans-serif",
+            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            color: isActive ? 'var(--accent-primary)' : 'white',
+            transform: isActive ? 'scale(1.05)' : 'scale(1)',
+            textShadow: isActive ? '0 0 20px var(--accent-glow)' : 'none',
+            opacity: isActive ? 1 : (isPast ? 0.3 : 0.6)
+          }}
+        >
+          {line.text}
+        </div>
+      );
+    });
+  };
+
   return (
     <>
       <audio 
@@ -319,10 +396,10 @@ const StickyPlayer = () => {
           
           <div className="fullscreen-content">
             {showLyrics ? (
-              <div className="fullscreen-lyrics" style={{ width: '100%', height: '50vh', overflowY: 'auto', textAlign: 'center', marginBottom: '20px', padding: '20px', background: 'rgba(0,0,0,0.6)', borderRadius: '16px', backdropFilter: 'blur(10px)', transition: 'all 0.3s' }}>
-                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: '1.2rem', lineHeight: '2', color: 'rgba(255,255,255,0.95)' }}>
-                  {lyricsData.text}
-                </pre>
+              <div className="fullscreen-lyrics" style={{ width: '100%', height: '50vh', overflowY: 'auto', textAlign: 'center', marginBottom: '20px', padding: '20px', background: 'rgba(0,0,0,0.6)', borderRadius: '20px', backdropFilter: 'blur(15px)', transition: 'all 0.3s', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ padding: '50% 0' }}>
+                  {renderLyrics()}
+                </div>
               </div>
             ) : (
               <img src={activeSong.artwork} alt={activeSong.title} className="fullscreen-artwork" />
