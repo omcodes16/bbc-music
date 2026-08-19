@@ -216,7 +216,7 @@
   .player-progress-container {
     display: none;
   }
-  .control-btn:not(.play-btn) {
+  .sticky-player .control-btn:not(.play-btn) {
     display: none;
   }
   .player-controls {
