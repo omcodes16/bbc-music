@@ -397,7 +397,7 @@ const StickyPlayer = () => {
           
           <div className="fullscreen-content">
             {showLyrics ? (
-              <div className="fullscreen-lyrics" style={{ width: '100%', height: '50vh', overflowY: 'auto', textAlign: 'center', marginBottom: '20px', padding: '20px', background: 'rgba(0,0,0,0.6)', borderRadius: '20px', backdropFilter: 'blur(15px)', transition: 'all 0.3s', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="fullscreen-lyrics" style={{ width: '100%', height: '50vh', overflowY: 'auto', scrollBehavior: 'smooth', textAlign: 'center', marginBottom: '20px', padding: '20px', background: 'rgba(0,0,0,0.6)', borderRadius: '20px', backdropFilter: 'blur(15px)', transition: 'all 0.3s', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{ padding: '50% 0' }}>
                   {renderLyrics()}
                 </div>
