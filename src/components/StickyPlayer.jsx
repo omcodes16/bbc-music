@@ -32,9 +32,8 @@ const StickyPlayer = () => {
   const [loopA, setLoopA] = useState(null);
   const [loopB, setLoopB] = useState(null);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [isBassBoosted, setIsBassBoosted] = useState(false);
 
-  // Setup Audio Context for Visualizer and Bass Boost
+  // Setup Audio Context for Visualizer
   useEffect(() => {
     if (audioRef.current && !audioContextRef.current) {
       const handlePlay = () => {
@@ -47,15 +46,8 @@ const StickyPlayer = () => {
             const newAnalyser = audioContextRef.current.createAnalyser();
             newAnalyser.fftSize = 256;
             
-            const bassFilter = audioContextRef.current.createBiquadFilter();
-            bassFilter.type = "lowshelf";
-            bassFilter.frequency.value = 150;
-            bassFilter.gain.value = 0;
-            bassFilterRef.current = bassFilter;
-            
             sourceRef.current.connect(newAnalyser);
-            newAnalyser.connect(bassFilter);
-            bassFilter.connect(audioContextRef.current.destination);
+            newAnalyser.connect(audioContextRef.current.destination);
             
             setAnalyser(newAnalyser);
           } catch (e) {
@@ -81,13 +73,6 @@ const StickyPlayer = () => {
       audioRef.current.volume = volume;
     }
   }, [volume]);
-
-  // Apply Bass Boost changes
-  useEffect(() => {
-    if (bassFilterRef.current) {
-      bassFilterRef.current.gain.value = isBassBoosted ? 15 : 0;
-    }
-  }, [isBassBoosted]);
 
   // Apply Playback Rate
   useEffect(() => {
@@ -374,17 +359,6 @@ const StickyPlayer = () => {
                   </button>
                 )}
               </div>
-
-              <button 
-                className="control-btn" 
-                onClick={() => {
-                  setIsBassBoosted(!isBassBoosted);
-                  showToast(isBassBoosted ? "Bass Boost Off" : "Bass Boost On");
-                }}
-                style={{ fontSize: '14px', fontWeight: 'bold', color: isBassBoosted ? 'var(--accent-primary)' : 'inherit', border: '1px solid currentColor', borderRadius: '12px', padding: '4px 12px' }}
-              >
-                Bass Boost
-              </button>
             </div>
 
             <div className="fullscreen-controls">
