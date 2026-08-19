@@ -32,6 +32,33 @@ const StickyPlayer = () => {
   const [loopA, setLoopA] = useState(null);
   const [loopB, setLoopB] = useState(null);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [showLyrics, setShowLyrics] = useState(false);
+  const [lyricsData, setLyricsData] = useState({ text: '', synced: false });
+
+  // Fetch lyrics automatically
+  useEffect(() => {
+    if (activeSong && showLyrics) {
+      setLyricsData({ text: 'Finding lyrics on LRCLIB...', synced: false });
+      const url = `https://lrclib.net/api/search?track_name=${encodeURIComponent(activeSong.title)}&artist_name=${encodeURIComponent(activeSong.artist)}`;
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            const track = data[0];
+            if (track.plainLyrics) {
+              setLyricsData({ text: track.plainLyrics, synced: false });
+            } else {
+              setLyricsData({ text: 'Lyrics not found for this song.', synced: false });
+            }
+          } else {
+            setLyricsData({ text: 'Lyrics not found for this song.', synced: false });
+          }
+        })
+        .catch(err => {
+          setLyricsData({ text: 'Error loading lyrics.', synced: false });
+        });
+    }
+  }, [activeSong, showLyrics]);
 
   // Setup Audio Context for Visualizer
   useEffect(() => {
@@ -291,7 +318,15 @@ const StickyPlayer = () => {
           <img src={activeSong.artwork} alt="background blur" className="fullscreen-bg-blur" />
           
           <div className="fullscreen-content">
-            <img src={activeSong.artwork} alt={activeSong.title} className="fullscreen-artwork" />
+            {showLyrics ? (
+              <div className="fullscreen-lyrics" style={{ width: '100%', height: '50vh', overflowY: 'auto', textAlign: 'center', marginBottom: '20px', padding: '20px', background: 'rgba(0,0,0,0.6)', borderRadius: '16px', backdropFilter: 'blur(10px)', transition: 'all 0.3s' }}>
+                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: '1.2rem', lineHeight: '2', color: 'rgba(255,255,255,0.95)' }}>
+                  {lyricsData.text}
+                </pre>
+              </div>
+            ) : (
+              <img src={activeSong.artwork} alt={activeSong.title} className="fullscreen-artwork" />
+            )}
             
             <div className="fullscreen-details">
               <div className="fullscreen-title-container">
@@ -325,7 +360,14 @@ const StickyPlayer = () => {
             </div>
 
             {/* Extra Controls Row */}
-            <div className="fullscreen-extra-controls" style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
+            <div className="fullscreen-extra-controls" style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <button 
+                className="control-btn" 
+                onClick={() => setShowLyrics(!showLyrics)}
+                style={{ fontSize: '14px', fontWeight: 'bold', color: showLyrics ? 'var(--accent-primary)' : 'inherit', border: '1px solid currentColor', borderRadius: '12px', padding: '4px 12px' }}
+              >
+                Lyrics
+              </button>
               <button 
                 className="control-btn" 
                 onClick={cyclePlaybackRate}
@@ -441,7 +483,12 @@ const StickyPlayer = () => {
       </div>
 
       <div className="player-right">
-        <button className="control-btn" onClick={() => showToast("Lyrics not available for this song")}><Mic2 size={18} /></button>
+        <button className="control-btn" onClick={() => {
+          setIsPlayerExpanded(true);
+          setShowLyrics(!showLyrics);
+        }}>
+          <Mic2 size={18} color={showLyrics ? "var(--accent-primary)" : "currentColor"} />
+        </button>
         <button className="control-btn" onClick={() => setVolume(volume === 0 ? 1 : 0)}>
           {volume === 0 ? <Volume2 size={18} opacity={0.5} /> : <Volume2 size={18} />}
         </button>
