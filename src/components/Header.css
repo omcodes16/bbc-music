@@ -21,14 +21,19 @@
     padding: 15px 20px;
     flex-wrap: wrap;
     gap: 15px;
+    justify-content: space-between;
+    align-items: center;
   }
   .header-mobile-brand {
     display: block;
-    width: 100%;
-    text-align: center;
+    order: 1;
+    font-size: 1.5rem;
+  }
+  .header-actions {
+    order: 2;
   }
   .search-container {
-    order: 2;
+    order: 3;
     width: 100%;
   }
 }

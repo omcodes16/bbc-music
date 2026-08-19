@@ -400,6 +400,17 @@
   }
   .fullscreen-details {
     margin-bottom: 16px;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .fullscreen-title-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .fullscreen-title-container h2 {
     font-size: 1.4rem;
@@ -409,6 +420,7 @@
   }
   .fullscreen-progress {
     margin-bottom: 20px;
+    width: 100%;
   }
   .fullscreen-controls .control-btn {
     min-width: 44px;

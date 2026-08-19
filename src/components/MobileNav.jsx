@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Heart, Folder } from 'lucide-react';
+import { Home, Heart, Folder, Star } from 'lucide-react';
 import { useTheme } from '../theme/ThemeProvider';
 import './MobileNav.css';
 
@@ -28,6 +28,13 @@ const MobileNav = () => {
       >
         <Folder size={24} />
         <span>Local Music</span>
+      </div>
+      <div 
+        className={`mobile-nav-item ${activeView === 'reviews' ? 'active' : ''}`}
+        onClick={() => setActiveView('reviews')}
+      >
+        <Star size={24} />
+        <span>Reviews</span>
       </div>
     </nav>
   );

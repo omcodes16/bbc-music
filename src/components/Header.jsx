@@ -16,7 +16,8 @@ const Header = () => {
 
   return (
     <header className="header">
-      <div className="search-bar">
+      <h1 className="header-mobile-brand display-font logo-3d" style={{ margin: 0 }}>BBC PLAYLIST</h1>
+      <div className="search-container">
         <Search size={20} className="search-icon" />
         <input 
           type="text" 
