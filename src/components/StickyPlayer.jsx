@@ -362,13 +362,15 @@ const StickyPlayer = () => {
             fontSize: isActive ? '1.8rem' : '1.3rem',
             fontWeight: isActive ? '800' : '600',
             lineHeight: '1.6',
-            marginBottom: '20px',
+            marginBottom: '24px',
             fontFamily: "'Inter', sans-serif",
-            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: 'all 0.8s cubic-bezier(0.25, 1, 0.5, 1)',
             color: isActive ? 'var(--accent-primary)' : 'white',
-            transform: isActive ? 'scale(1.05)' : 'scale(1)',
-            textShadow: isActive ? '0 0 20px var(--accent-glow)' : 'none',
-            opacity: isActive ? 1 : (isPast ? 0.3 : 0.6)
+            transform: isActive ? 'scale(1.15) translateY(-5px)' : 'scale(0.9) translateY(0)',
+            transformOrigin: 'center',
+            filter: isActive ? 'blur(0px)' : (isPast ? 'blur(3px)' : 'blur(1.5px)'),
+            textShadow: isActive ? '0 0 25px var(--accent-glow)' : 'none',
+            opacity: isActive ? 1 : (isPast ? 0.2 : 0.4)
           }}
         >
           {line.text}
