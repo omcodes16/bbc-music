@@ -1,10 +1,10 @@
 import React from 'react';
-import { Home, Compass, Search, Clock, Heart, ListMusic, Folder, Settings, User } from 'lucide-react';
+import { Home, Heart, ListMusic, Folder, Star, MessageSquare } from 'lucide-react';
 import { useTheme } from '../theme/ThemeProvider';
 import './Sidebar.css';
 
 const Sidebar = () => {
-  const { activeView, setActiveView } = useTheme();
+  const { activeView, setActiveView, setIsRateUsOpen } = useTheme();
 
   return (
     <aside className="sidebar">
@@ -33,6 +33,18 @@ const Sidebar = () => {
         <ul>
           <li className={activeView === 'favorites' ? 'active' : ''} onClick={() => setActiveView('favorites')}><Heart size={20} /> Favorites</li>
           <li className={activeView === 'local-music' ? 'active' : ''} onClick={() => setActiveView('local-music')}><Folder size={20} /> Local Music</li>
+        </ul>
+      </nav>
+
+      <nav className="nav-group">
+        <h4 className="nav-title">FEEDBACK</h4>
+        <ul>
+          <li onClick={() => setIsRateUsOpen(true)}>
+            <Star size={20} /> Rate Us
+          </li>
+          <li className={activeView === 'reviews' ? 'active' : ''} onClick={() => setActiveView('reviews')}>
+            <MessageSquare size={20} /> Reviews
+          </li>
         </ul>
       </nav>
     </aside>

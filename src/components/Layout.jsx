@@ -10,6 +10,8 @@ import MobileNav from './MobileNav';
 import Favorites from './Favorites';
 import RecentlyPlayed from './RecentlyPlayed';
 import LocalMusic from './LocalMusic';
+import ReviewsPage from './ReviewsPage';
+import RateUs from './RateUs';
 import { useTheme } from '../theme/ThemeProvider';
 import './Layout.css';
 
@@ -27,6 +29,8 @@ const Layout = () => {
     }
 
     switch (activeView) {
+      case 'reviews':
+        return <ReviewsPage />;
       case 'favorites':
         return <Favorites />;
       case 'recently-played':
@@ -93,6 +97,8 @@ const Layout = () => {
       </div>
       <StickyPlayer />
       <MobileNav />
+      {/* RateUs modal — rendered globally so it overlays any page */}
+      <RateUs />
     </div>
   );
 };
