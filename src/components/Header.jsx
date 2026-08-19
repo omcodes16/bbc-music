@@ -20,7 +20,7 @@ const Header = () => {
         <Search size={20} className="search-icon" />
         <input 
           type="text" 
-          placeholder="What do you want to listen to?" 
+          placeholder="Search" 
           className="search-input" 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}

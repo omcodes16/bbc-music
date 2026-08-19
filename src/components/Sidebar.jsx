@@ -9,8 +9,7 @@ const Sidebar = () => {
   return (
     <aside className="sidebar">
       <div className="brand" onClick={() => setActiveView('home')} style={{cursor: 'pointer'}}>
-        <h1 className="display-font">BBC</h1>
-        <p>PLAYLIST</p>
+        <h1 className="display-font logo-3d">BBC PLAYLIST</h1>
       </div>
 
       <nav className="nav-group">

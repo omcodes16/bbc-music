@@ -28,10 +28,37 @@
   letter-spacing: 2px;
 }
 
-.brand p {
-  font-size: 0.7rem;
-  letter-spacing: 4px;
-  opacity: 0.7;
+.logo-3d {
+  background: linear-gradient(to right, #fff, var(--text-secondary));
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 
+    1px 1px 0px var(--accent-primary),
+    2px 2px 0px var(--accent-primary),
+    3px 3px 0px var(--accent-primary),
+    4px 4px 5px rgba(0,0,0,0.8),
+    0px 0px 20px var(--accent-glow);
+  animation: colorPulse 3s infinite alternate;
+}
+
+@keyframes colorPulse {
+  0% {
+    text-shadow: 
+      1px 1px 0px var(--accent-primary),
+      2px 2px 0px var(--accent-primary),
+      3px 3px 0px var(--accent-primary),
+      4px 4px 5px rgba(0,0,0,0.8),
+      0px 0px 10px var(--accent-glow);
+  }
+  100% {
+    text-shadow: 
+      1px 1px 0px var(--accent-primary),
+      2px 2px 0px var(--accent-primary),
+      3px 3px 0px var(--accent-primary),
+      4px 4px 5px rgba(0,0,0,0.8),
+      0px 0px 30px var(--accent-glow),
+      0px 0px 40px var(--accent-primary);
+  }
 }
 
 .nav-group {
