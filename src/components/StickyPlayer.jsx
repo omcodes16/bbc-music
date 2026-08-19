@@ -235,25 +235,26 @@ const StickyPlayer = () => {
     else setRepeatMode('off');
   };
 
-  const handleSetLoop = () => {
+  const handleSetA = () => {
     if (!audioRef.current) return;
-    if (loopA === null) {
-      setLoopA(audioRef.current.currentTime);
-      showToast("Loop Start (A) Set");
-    } else if (loopB === null) {
-      const current = audioRef.current.currentTime;
-      if (current > loopA) {
-        setLoopB(current);
-        showToast("Loop End (B) Set");
-      } else {
-        setLoopA(current);
-        showToast("Loop Start (A) Updated");
-      }
-    } else {
-      setLoopA(null);
-      setLoopB(null);
-      showToast("A-B Loop Cleared");
+    setLoopA(audioRef.current.currentTime);
+    showToast("Point A Set!");
+  };
+
+  const handleSetB = () => {
+    if (!audioRef.current) return;
+    if (loopA !== null && audioRef.current.currentTime <= loopA) {
+      showToast("Point B must be after Point A!");
+      return;
     }
+    setLoopB(audioRef.current.currentTime);
+    showToast("Point B Set! Looping...");
+  };
+
+  const clearLoop = () => {
+    setLoopA(null);
+    setLoopB(null);
+    showToast("Loop Cleared");
   };
 
   const cyclePlaybackRate = () => {
@@ -348,13 +349,31 @@ const StickyPlayer = () => {
                 {playbackRate}x
               </button>
               
-              <button 
-                className="control-btn" 
-                onClick={handleSetLoop}
-                style={{ fontSize: '14px', fontWeight: 'bold', color: loopA !== null ? 'var(--accent-primary)' : 'inherit', border: '1px solid currentColor', borderRadius: '12px', padding: '4px 12px', minWidth: '85px' }}
-              >
-                {loopA === null ? 'A-B Loop' : loopB === null ? 'Set B' : 'Clear A-B'}
-              </button>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <button 
+                  className="control-btn" 
+                  onClick={handleSetA}
+                  style={{ fontSize: '12px', fontWeight: 'bold', color: loopA !== null ? 'var(--accent-primary)' : 'inherit', border: '1px solid currentColor', borderRadius: '12px', padding: '4px 8px' }}
+                >
+                  Set A {loopA !== null && `(${formatTime(loopA)})`}
+                </button>
+                <button 
+                  className="control-btn" 
+                  onClick={handleSetB}
+                  style={{ fontSize: '12px', fontWeight: 'bold', color: loopB !== null ? 'var(--accent-primary)' : 'inherit', border: '1px solid currentColor', borderRadius: '12px', padding: '4px 8px' }}
+                >
+                  Set B {loopB !== null && `(${formatTime(loopB)})`}
+                </button>
+                {(loopA !== null || loopB !== null) && (
+                  <button 
+                    className="control-btn" 
+                    onClick={clearLoop}
+                    style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--text-secondary)', border: '1px solid currentColor', borderRadius: '12px', padding: '4px 8px' }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
 
               <button 
                 className="control-btn" 
