@@ -19,6 +19,9 @@
 @media (max-width: 768px) {
   .mobile-nav {
     display: flex;
+    background-color: #121212; /* Solid dark */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 

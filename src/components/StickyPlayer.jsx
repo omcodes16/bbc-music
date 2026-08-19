@@ -541,7 +541,7 @@ const StickyPlayer = () => {
           <button className="control-btn play-btn" onClick={togglePlay}>
             {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
           </button>
-          <button className="control-btn" onClick={() => playNextSong(false)}><SkipForward size={24} fill="currentColor" /></button>
+          <button className="control-btn next-btn" onClick={() => playNextSong(false)}><SkipForward size={24} fill="currentColor" /></button>
           <button className="control-btn" onClick={toggleRepeat}>{getRepeatIconSmall()}</button>
         </div>
         <div className="player-progress-container">

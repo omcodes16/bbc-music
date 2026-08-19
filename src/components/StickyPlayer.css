@@ -202,26 +202,52 @@
     bottom: 60px;
     padding: 0 12px;
     height: 64px;
+    background: #181818; /* Solid dark */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
   .player-left {
-    width: 75%;
+    width: 60%;
   }
   .player-center {
-    width: 25%;
+    width: 40%;
     align-items: flex-end;
   }
   .player-right {
     display: none;
   }
+  /* Mini player progress bar at the very bottom */
   .player-progress-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    height: 2px;
+  }
+  .player-progress-container .time-text {
     display: none;
   }
-  .sticky-player .control-btn:not(.play-btn) {
+  .player-progress-container .progress-bar {
+    border-radius: 0;
+    height: 2px;
+  }
+  .player-progress-container .progress-slider {
+    height: 2px;
+    border-radius: 0;
+  }
+  .player-progress-container .progress-slider::-webkit-slider-thumb {
+    display: none;
+  }
+  .sticky-player .control-btn:not(.play-btn):not(.next-btn) {
     display: none;
   }
   .player-controls {
     justify-content: flex-end;
     width: 100%;
+    margin-bottom: 5px;
+    gap: 16px;
   }
 }
 
