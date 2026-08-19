@@ -1,0 +1,17 @@
+{
+  "name": "BBC PLAYLIST",
+  "short_name": "BBC Playlist",
+  "description": "Listen to your favorite songs on BBC Playlist",
+  "start_url": "/bbc-music/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
