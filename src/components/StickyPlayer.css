@@ -388,10 +388,11 @@
     left: 16px;
     width: 40px;
     height: 40px;
+    z-index: 100;
   }
   .fullscreen-content {
     max-width: 100%;
-    padding: 16px;
+    padding: 64px 16px 16px 16px;
     justify-content: space-evenly;
   }
   .fullscreen-artwork {
