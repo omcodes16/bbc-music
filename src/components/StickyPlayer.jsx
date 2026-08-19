@@ -74,10 +74,15 @@ const StickyPlayer = () => {
     if (audioRef.current && activeSong) {
       audioRef.current.src = activeSong.audioSrc || "";
       if (isPlaying) {
-        audioRef.current.play().catch(e => {
-          console.log("Audio play error:", e);
-          setIsPlaying(false);
-        });
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.log("Audio play error (activeSong):", e);
+            if (e.name !== 'AbortError') {
+              setIsPlaying(false);
+            }
+          });
+        }
       }
       
       // Track recently played
@@ -89,10 +94,15 @@ const StickyPlayer = () => {
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying && audioRef.current.paused) {
-        audioRef.current.play().catch(e => {
-          console.log("Audio play error:", e);
-          setIsPlaying(false);
-        });
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.log("Audio play error (isPlaying):", e);
+            if (e.name !== 'AbortError') {
+              setIsPlaying(false);
+            }
+          });
+        }
       } else if (!isPlaying && !audioRef.current.paused) {
         audioRef.current.pause();
       }
